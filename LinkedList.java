@@ -52,10 +52,51 @@ public class LinkedList {
 	return sumHelper(head1, head2, 0);
     }
 
+    static SumResult addDescHelper(Node head1, Node head2) {
+	if (head1 == null && head2 == null) {
+	    return new SumResult();
+	}
+	
+	SumResult res = addDescHelper(head1.nxt, head2.nxt);
+	int sum = head1.data + head2.data + res.carry;
+	Node sumNode = new Node();
+	sumNode.data = sum % 10;
+	sumNode.nxt = res.sumHead;
+	res.sumHead = sumNode;
+	res.carry = sum / 10;
+
+	return res;
+    }
+
+    static Node zeroPad(Node head, int numZeros) {
+	System.out.printf("padding %d zeros to node: %s%n", numZeros, head);
+	if (numZeros == 0) return head;
+	Node tmp = new Node();
+	tmp.data = 0;
+	tmp.nxt = head;
+	return zeroPad(tmp, --numZeros);
+    }
+
+    
+
+    static Node addDesc(Node head1, Node head2) {
+	int l1 = length(head1);
+	int l2 = length(head2);
+	if (l1 < l2) {
+	    head1 = zeroPad(head1, l2 - l1);
+	}
+	if (l2 < l1) {
+	    head2 = zeroPad(head2, l1 - l2);
+	}
+	
+	return addDescHelper(head1, head2).sumHead;
+    }
+
     static String llToString(Node head) {
 	if (head == null) return "";
 	return head.data + ", "+ llToString(head.nxt);
     }
+    
 
     public static void main(String[] args) {
 	Node l1n1 = new Node();
@@ -86,5 +127,7 @@ public class LinkedList {
 
 	System.out.println(llToString(sumAscLL(l1n1, l2n1)));
 	
+	System.out.println(llToString(addDesc(l1n1, l2n1)));
+
     }
 }
